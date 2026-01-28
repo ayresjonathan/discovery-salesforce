@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discovery Fábrica Salesforce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            background: white;
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e8e8e8;
+        }
+
+        .card h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .input-group button {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .input-group button:hover {
+            transform: translateY(-2px);
+        }
+
+        .respondent-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .respondent-btn {
+            padding: 8px 14px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .respondent-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .respondent-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db 0%, #2ecc71 100%);
+            transition: width 0.3s;
+        }
+
+        .question-block {
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #e8e8e8;
+            overflow: hidden;
+        }
+
+        .block-header {
+            padding: 15px;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background 0.3s;
+        }
+
+        .block-header:hover {
+            background: #f0f2f5;
+        }
+
+        .block-header.expanded {
+            background: #ebf5fb;
+        }
+
+        .block-title {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .block-emoji {
+            font-size: 20px;
+        }
+
+        .block-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .block-count {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .chevron {
+            transition: transform 0.3s;
+            color: #95a5a6;
+            pointer-events: none;
+        }
+
+        .block-header.expanded .chevron {
+            transform: rotate(180deg);
+        }
+
+        .block-content {
+            display: none;
+            padding: 20px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .block-content.open {
+            display: block;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            transition: all 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #c3e6cb;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e8e8e8;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        th {
+            font-weight: 700;
+            color: #7f8c8d;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .delete-btn {
+            background: #fadbd8;
+            color: #c0392b;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .delete-btn:hover {
+            background: #f5b7b1;
+        }
+
+        .cta-box {
+            background: linear-gradient(135deg, #ecf0f1 0%, #d5dbdb 100%);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .sync-status {
+            font-size: 11px;
+            color: #7f8c8d;
+            margin-top: 10px;
+        }
+
+        .sync-status.synced {
+            color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🎯 Discovery Fábrica Salesforce</h1>
+            <p class="subtitle">Pesquisa estruturada para transformação de processos</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('survey')">📋 Pesquisa</button>
+            <button class="tab-btn" onclick="switchTab('respondents')">👥 Respondentes (<span id="count">0</span>/5)</button>
+            <button class="tab-btn" onclick="switchTab('analysis')">📊 Análise</button>
+        </div>
+
+        <!-- SURVEY VIEW -->
+        <div id="survey" class="tab-content active">
+            <div class="card">
+                <h2>Respondente Atual: <span id="currentName">—</span></h2>
+                
+                <div id="respondentList" class="respondent-list"></div>
+
+                <div class="input-group">
+                    <input type="text" id="respondentNameInput" placeholder="Ex: João Silva - Tech Lead">
+                    <button onclick="addRespondent()">+ Adicionar</button>
+                </div>
+
+                <div id="successMsg" class="success-msg hidden"></div>
+                <div class="sync-status" id="syncStatus">Sincronizando...</div>
+            </div>
+
+            <div class="card hidden" id="progressCard">
+                <h3>Progresso</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span id="progressText">0/49</span>
+                    <span id="progressPercent" style="font-weight: 700; color: #3498db;">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="questionsContainer"></div>
+
+            <div class="empty-state" id="emptyState">
+                <p>Nenhum respondente criado ainda</p>
+            </div>
+        </div>
+
+        <!-- RESPONDENTS VIEW -->
+        <div id="respondents" class="tab-content">
+            <h2 style="margin-bottom: 20px;">Respondentes Coletados</h2>
+            <div id="respondentsList"></div>
+        </div>
+
+        <!-- ANALYSIS VIEW -->
+        <div id="analysis" class="tab-content">
+            <h2 style="margin-bottom: 20px;">Análise das Respostas</h2>
+            <div id="analysisContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== CONFIG ====================
+        const STORAGE_KEY = 'discoveryData';
+        const SYNC_INTERVAL = 3000;
+
+        // ==================== DATA ====================
+        let respondents = [];
+        let currentRespondentId = null;
+        let lastSyncTime = 0;
+
+        const questionBlocks = [
+            {
+                title: 'Visão Geral da Organização',
+                emoji: '🏢',
+                questions: [
+                    { id: 'q1', text: 'Qual é o tamanho e a maturidade atual da sua organização em termos de desenvolvimento Salesforce? (número de pessoas, tempo de atuação)' },
+                    { id: 'q2', text: 'Quantas demandas Salesforce você recebe por mês/trimestre? Consegue categorizar por tipo?' },
+                    { id: 'q3', text: 'Qual é o modelo de negócio atual? (fábrica interna, centro de serviços, prestadora de serviços, híbrido?)' },
+                    { id: 'q4', text: 'Existe uma estratégia de TI/Salesforce documentada? Qual é a visão de 3-5 anos?' },
+                    { id: 'q5', text: 'Quem são seus stakeholders principais?' }
+                ]
+            },
+            {
+                title: 'Processo Atual - Recebimento e Priorização',
+                emoji: '📥',
+                questions: [
+                    { id: 'q6', text: 'Como as demandas chegam até você? (portal, email, reuniões, ticketing, múltiplos canais?)' },
+                    { id: 'q7', text: 'Existe um SLA definido para atendimento?' },
+                    { id: 'q8', text: 'Como é feita a priorização de demandas? (critérios utilizados?)' },
+                    { id: 'q9', text: 'Vocês fazem análise inicial/triagem antes de aceitar a demanda?' },
+                    { id: 'q10', text: 'Existe um backlog formalizado? Como é organizado?' }
+                ]
+            },
+            {
+                title: 'Metodologia Atual',
+                emoji: '⚙️',
+                questions: [
+                    { id: 'q11', text: 'Qual é a metodologia de trabalho adotada? (Waterfall, Agil/Scrum, Kanban, customizada, nenhuma?)' },
+                    { id: 'q12', text: 'Se usa Scrum: qual é a duração do sprint e taxa de sucesso?' },
+                    { id: 'q13', text: 'Se usa Kanban: quais são os estados do fluxo e WIP limits?' },
+                    { id: 'q14', text: 'Qual ferramenta de gerenciamento utilizam? (Jira, Azure DevOps, Monday, Asana, outras?)' },
+                    { id: 'q15', text: 'Existe integração entre a ferramenta de gestão e o ambiente Salesforce?' }
+                ]
+            },
+            {
+                title: 'Equipe e Papéis',
+                emoji: '👥',
+                questions: [
+                    { id: 'q16', text: 'Como é estruturada a equipe? (devs, consultores, QA, DevOps, senioridade?)' },
+                    { id: 'q17', text: 'Como é feita a alocação de pessoas? (dedicado, compartilhado, por demanda?)' },
+                    { id: 'q18', text: 'Existe um processo de onboarding para novos membros?' },
+                    { id: 'q19', text: 'Qual é o nível de conhecimento técnico compartilhado?' }
+                ]
+            },
+            {
+                title: 'Desenvolvimento e Qualidade',
+                emoji: '⚡',
+                questions: [
+                    { id: 'q20', text: 'Qual é o processo de desenvolvimento? (ambientes, versionamento, estratégia de branches?)' },
+                    { id: 'q21', text: 'Como é feito o controle de qualidade? (testes automatizados, manuais, code review?)' },
+                    { id: 'q22', text: 'Qual é a taxa de bugs em produção?' },
+                    { id: 'q23', text: 'Existe documentação de código/soluções atualizada?' },
+                    { id: 'q24', text: 'Como é feita a integração contínua/deployment? (CI/CD implementado?)' }
+                ]
+            },
+            {
+                title: 'Entrega e Releases',
+                emoji: '🚀',
+                questions: [
+                    { id: 'q25', text: 'Qual é a frequência de releases? (por demanda, períodos, contínuo?)' },
+                    { id: 'q26', text: 'Como é feito o planejamento de release?' },
+                    { id: 'q27', text: 'Qual é o processo de rollback em caso de falhas?' },
+                    { id: 'q28', text: 'Existe gestão de mudanças formalizada (change management ITIL?)' }
+                ]
+            },
+            {
+                title: 'Acompanhamento e Métricas',
+                emoji: '📊',
+                questions: [
+                    { id: 'q29', text: 'Quais métricas vocês acompanham? (Lead time, Cycle time, Velocity, Taxa de retrabalho?)' },
+                    { id: 'q30', text: 'Como é feito o acompanhamento de demandas em andamento?' },
+                    { id: 'q31', text: 'Existe relatório de status para stakeholders? Qual a frequência?' }
+                ]
+            },
+            {
+                title: 'Desafios e Pain Points',
+                emoji: '⚠️',
+                questions: [
+                    { id: 'q32', text: 'Quais são os principais desafios/problemas enfrentados atualmente?' },
+                    { id: 'q33', text: 'Qual é o nível de satisfação da equipe? Existe burnout?' },
+                    { id: 'q34', text: 'Qual é o feedback dos clientes/stakeholders?' },
+                    { id: 'q35', text: 'Existem gargalos identificados? Onde o processo falha?' },
+                    { id: 'q36', text: 'Qual é a taxa de retrabalho?' }
+                ]
+            },
+            {
+                title: 'Infraestrutura e Ferramentas',
+                emoji: '🛠️',
+                questions: [
+                    { id: 'q37', text: 'Qual é a estrutura de ambientes Salesforce? (Dev, Stage, Prod, sandboxes?)' },
+                    { id: 'q38', text: 'Qual é a estratégia de dados para testes?' },
+                    { id: 'q39', text: 'Quais ferramentas complementares utilizam? (integrações, testes, monitoramento?)' },
+                    { id: 'q40', text: 'Como é feito o backup e disaster recovery?' }
+                ]
+            },
+            {
+                title: 'Conformidade e Governança',
+                emoji: '🔐',
+                questions: [
+                    { id: 'q41', text: 'Existem compliance/regulamentações a respeitar? (LGPD, GDPR, ISO, SOX?)' },
+                    { id: 'q42', text: 'Existe governança de dados em Salesforce?' },
+                    { id: 'q43', text: 'Existe política de segurança para desenvolvimento?' },
+                    { id: 'q44', text: 'Como é feito o audit/rastreamento de mudanças?' }
+                ]
+            },
+            {
+                title: 'Visão Futura (TO-BE)',
+                emoji: '🎯',
+                questions: [
+                    { id: 'q45', text: 'Qual é a visão ideal para sua fábrica? O que gostaria de melhorar?' },
+                    { id: 'q46', text: 'Quais seriam as principais métricas de sucesso?' },
+                    { id: 'q47', text: 'Existe orçamento/recursos disponíveis para melhorias?' },
+                    { id: 'q48', text: 'Qual é o nível de aceitação da organização para mudanças?' },
+                    { id: 'q49', text: 'Existem iniciativas estratégicas Salesforce planejadas?' }
+                ]
+            }
+        ];
+
+        // ==================== FUNCTIONS ====================
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    respondents = JSON.parse(saved);
+                    if (respondents.length > 0) {
+                        currentRespondentId = respondents[0].id;
+                    }
+                } catch (e) {
+                    console.error('Erro ao carregar dados:', e);
+                }
+            }
+            render();
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(respondents));
+                updateSyncStatus(true);
+            } catch (e) {
+                console.error('Erro ao salvar dados:', e);
+                updateSyncStatus(false);
+            }
+        }
+
+        function updateSyncStatus(synced) {
+            const status = document.getElementById('syncStatus');
+            if (synced) {
+                status.textContent = '✓ Sincronizado';
+                status.classList.add('synced');
+                lastSyncTime = Date.now();
+                setTimeout(() => {
+                    status.classList.remove('synced');
+                    status.textContent = 'Sincronizando...';
+                }, 2000);
+            }
+        }
+
+        function addRespondent() {
+            const name = document.getElementById('respondentNameInput').value.trim();
+            if (!name) {
+                showMessage('Por favor, digite um nome', false);
+                return;
+            }
+            if (respondents.length >= 5) {
+                alert('Limite de 5 respondentes atingido');
+                return;
+            }
+
+            const newRespondent = {
+                id: Date.now(),
+                name: name,
+                createdAt: new Date().toLocaleDateString('pt-BR'),
+                answers: {}
+            };
+
+            respondents.push(newRespondent);
+            currentRespondentId = newRespondent.id;
+            document.getElementById('respondentNameInput').value = '';
+            saveData();
+            render();
+            showMessage('✨ Respondente criado com sucesso!', true);
+        }
+
+        function deleteRespondent(id) {
+            if (confirm('Tem certeza que quer deletar este respondente?')) {
+                respondents = respondents.filter(r => r.id !== id);
+                if (currentRespondentId === id) {
+                    currentRespondentId = respondents.length > 0 ? respondents[0].id : null;
+                }
+                saveData();
+                render();
+            }
+        }
+
+        function selectRespondent(id) {
+            currentRespondentId = id;
+            render();
+        }
+
+        function updateAnswer(questionId, value) {
+            const respondent = respondents.find(r => r.id === currentRespondentId);
+            if (respondent) {
+                respondent.answers[questionId] = value;
+                saveData();
+                updateProgress();
+                showMessage('✓ Resposta salva', true);
+            }
+        }
+
+        function toggleBlock(event, index) {
+            // Previne que cliques nas textareas disparem o toggle
+            if (event.target.tagName === 'TEXTAREA' || event.target.tagName === 'INPUT') {
+                return;
+            }
+
+            // Só toggle se clicou no header
+            if (!event.currentTarget.classList.contains('block-header')) {
+                return;
+            }
+
+            const content = document.getElementById(`block-${index}`);
+            const header = document.getElementById(`header-${index}`);
+            
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                header.classList.remove('expanded');
+            } else {
+                content.classList.add('open');
+                header.classList.add('expanded');
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'analysis') {
+                renderAnalysis();
+            }
+        }
+
+        function showMessage(text, success) {
+            const msg = document.getElementById('successMsg');
+            msg.textContent = text;
+            msg.classList.toggle('hidden', false);
+            setTimeout(() => msg.classList.add('hidden'), 2500);
+        }
+
+        function updateProgress() {
+            const respondent = respondents.find(r => r.id === currentRespondentId);
+            if (!respondent) return;
+
+            const answered = Object.keys(respondent.answers).length;
+            const total = questionBlocks.reduce((sum, b) => sum + b.questions.length, 0);
+            const percent = Math.round((answered / total) * 100);
+
+            document.getElementById('progressText').textContent = `${answered}/${total}`;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        function render() {
+            document.getElementById('count').textContent = respondents.length;
+
+            const listContainer = document.getElementById('respondentList');
+            if (respondents.length === 0) {
+                listContainer.innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('progressCard').classList.add('hidden');
+                document.getElementById('questionsContainer').innerHTML = '';
+                document.getElementById('currentName').textContent = '—';
+                return;
+            }
+
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('progressCard').classList.remove('hidden');
+
+            let html = '';
+            respondents.forEach(r => {
+                const answered = Object.keys(r.answers).length;
+                html += `<button class="respondent-btn ${r.id === currentRespondentId ? 'active' : ''}" onclick="selectRespondent(${r.id})">${r.name} (${answered}/49)</button>`;
+            });
+            listContainer.innerHTML = html;
+
+            const current = respondents.find(r => r.id === currentRespondentId);
+            if (!current) return;
+
+            document.getElementById('currentName').textContent = current.name;
+            updateProgress();
+
+            const qContainer = document.getElementById('questionsContainer');
+            qContainer.innerHTML = '';
+
+            questionBlocks.forEach((block, idx) => {
+                const answered = block.questions.filter(q => current.answers[q.id]).length;
+                
+                let blockHtml = `
+                    <div class="question-block">
+                        <div class="block-header" id="header-${idx}" onclick="toggleBlock(event, ${idx})">
+                            <div class="block-title">
+                                <span class="block-emoji">${block.emoji}</span>
+                                <div>
+                                    <div class="block-name">${block.title}</div>
+                                    <div class="block-count">${answered}/${block.questions.length} questões</div>
+                                </div>
+                            </div>
+                            <span class="chevron">▼</span>
+                        </div>
+                        <div class="block-content" id="block-${idx}">
+                `;
+
+                block.questions.forEach(q => {
+                    const value = current.answers[q.id] || '';
+                    blockHtml += `
+                        <div class="question">
+                            <div class="question-text">${q.text}</div>
+                            <textarea onchange="updateAnswer('${q.id}', this.value)" placeholder="Digite sua resposta aqui...">${value}</textarea>
+                        </div>
+                    `;
+                });
+
+                blockHtml += '</div></div>';
+                qContainer.innerHTML += blockHtml;
+            });
+
+            const listView = document.getElementById('respondentsList');
+            let listHtml = '';
+            respondents.forEach(r => {
+                const answered = Object.keys(r.answers).length;
+                const percent = Math.round((answered / 49) * 100);
+                listHtml += `
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <div>
+                                <h3>${r.name}</h3>
+                                <p style="font-size: 12px; color: #7f8c8d;">Criado em ${r.createdAt}</p>
+                            </div>
+                            <button class="delete-btn" onclick="deleteRespondent(${r.id})">Excluir</button>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px;">
+                                <span>Progresso: ${answered}/49</span>
+                                <span style="font-weight: 700; color: #3498db;">${percent}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+                        <button class="tab-btn" onclick="selectRespondent(${r.id}); switchTab('survey')">Continuar</button>
+                    </div>
+                `;
+            });
+            listView.innerHTML = listHtml;
+        }
+
+        function renderAnalysis() {
+            const container = document.getElementById('analysisContainer');
+            
+            if (respondents.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>Nenhum respondente coletado</p></div>';
+                return;
+            }
+
+            const total = respondents.reduce((sum, r) => sum + Object.keys(r.answers).length, 0);
+            const avg = respondents.length > 0 ? Math.round((total / (respondents.length * 49)) * 100) : 0;
+
+            let html = `
+                <div class="stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">👥 Respondentes</div>
+                        <div class="stat-value">${respondents.length}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">✍️ Respostas</div>
+                        <div class="stat-value">${total}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">📈 Média</div>
+                        <div class="stat-value">${avg}%</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Detalhes</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Respostas</th>
+                                <th>Conclusão</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            respondents.forEach(r => {
+                const answered = Object.keys(r.answers).length;
+                const percent = Math.round((answered / 49) * 100);
+                html += `
+                    <tr>
+                        <td style="font-weight: 600;">${r.name}</td>
+                        <td>${answered}/49</td>
+                        <td>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <div class="progress-bar" style="flex: 1; min-width: 60px;">
+                                    <div class="progress-fill" style="width: ${percent}%"></div>
+                                </div>
+                                <span style="font-weight: 700; color: #3498db; font-size: 12px; min-width: 30px;">${percent}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cta-box">
+                    <h3>📊 Próximos Passos</h3>
+                    <p style="margin-top: 10px; font-size: 13px; color: #555;">Quando todos os respondentes completarem, você terá dados consolidados para desenhar o TO-BE e o roadmap de transformação!</p>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // ==================== INIT ====================
+        window.addEventListener('DOMContentLoaded', loadData);
+        
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                render();
+            }
+        }, SYNC_INTERVAL);
+    </script>
+</body>
+</html>
